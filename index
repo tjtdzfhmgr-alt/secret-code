@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secret Love Code 🗝️</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    /* --------------------------------------------------
+       CSS VARIABLES & BASE STYLES
+       -------------------------------------------------- */
+    :root {
+      --bg-color: #f5f0eb;        /* Vintage Muted Cream */
+      --text-main: #4a3f35;       /* Muted Warm Brown */
+      --text-muted: #8c7b6c;      /* Soft Taupe */
+      --accent-rose: #c89696;     /* Muted Dusty Rose */
+      --accent-sage: #7d8c7c;     /* Muted Sage Green */
+      --box-brown: #c49a6c;       /* Muted Cardboard Brown */
+      --tape-body: #3a3836;       /* Retro Cassette Black/Gray */
+      --error-color: #ba5d5d;
+      --font-code: 'Courier Prime', monospace;
+      --font-hand: 'Charm', cursive;
+      --font-body: 'Sarabun', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Container สไตล์ Frame ป้องกันไม่ให้กว้างเกินไปบนจอคอม */
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100vh;
+      background-color: var(--bg-color);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+      box-shadow: 0 0 30px rgba(0,0,0,0.03);
+    }
+
+    /* Section Management */
+    .page-section {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out;
+    }
+
+    .page-section.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    /* Buttons */
+    .btn-next {
+      margin-top: 2rem;
+      background: none;
+      border: 1px dashed var(--accent-sage);
+      color: var(--accent-sage);
+      padding: 0.6rem 1.5rem;
+      font-family: var(--font-code);
+      font-size: 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-next:hover {
+      background-color: var(--accent-sage);
+      color: #fff;
+    }
+
+    /* --------------------------------------------------
+       SECTION 1: PASSWORD LOCK
+       -------------------------------------------------- */
+    .lock-title {
+      font-family: var(--font-code);
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+      margin-bottom: 1.5rem;
+      min-height: 2.5rem;
+    }
+
+    .pass-input-container {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .digit-box {
+      width: 45px;
+      height: 55px;
+      border: 2px solid var(--text-muted);
+      border-radius: 8px;
+      font-family: var(--font-code);
+      font-size: 1.8rem;
+      text-align: center;
+      line-height: 55px;
+      background: rgba(255, 255, 255, 0.4);
+      color: var(--text-main);
+      transition: all 0.3s ease;
+    }
+
+    .digit-box.active {
+      border-color: var(--accent-rose);
+      box-shadow: 0 0 8px rgba(200, 150, 150, 0.3);
+    }
+
+    .hint-text {
+      font-family: var(--font-code);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 1rem;
+      opacity: 0.8;
+    }
+
+    .error-msg {
+      color: var(--error-color);
+      font-family: var(--font-code);
+      font-size: 0.9rem;
+      margin-top: 0.8rem;
+      height: 1.2rem;
+    }
+
+    /* Animation สั่นเมื่อผิด */
+    .shake {
+      animation: shake 0.4s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+
+    /* --------------------------------------------------
+       SECTION 2: PARCEL BOX DROP
+       -------------------------------------------------- */
+    .drop-box-container {
+      cursor: pointer;
+      position: relative;
+      margin: 2rem 0;
+      animation: dropDown 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.27) forwards;
+    }
+
+    @keyframes dropDown {
+      0% { transform: translateY(-300px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    /* SVG กล่องพัสดุ */
+    .parcel-svg {
+      width: 180px;
+      height: 180px;
+      filter: drop-shadow(0 10px 15px rgba(0,0,0,0.05));
+      transition: transform 0.3s ease;
+    }
+
+    .drop-box-container:hover .parcel-svg {
+      transform: scale(1.05);
+    }
+
+    .box-heading {
+      font-family: var(--font-hand);
+      font-size: 2rem;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+    }
+
+    .tap-hint {
+      font-family: var(--font-code);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    /* --------------------------------------------------
+       SECTION 3: CASSETTE & LETTER (SCROLLABLE)
+       -------------------------------------------------- */
+    .scrollable-content {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2.5rem;
+    }
+
+    /* Cassette Tape */
+    .cassette {
+      width: 260px;
+      height: 160px;
+      background-color: var(--tape-body);
+      border-radius: 12px;
+      padding: 12px;
+      position: relative;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .cassette-label {
+      width: 100%;
+      height: 90px;
+      background: #e8e2d8;
+      border-radius: 6px;
+      border: 2px solid var(--accent-rose);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+      padding: 6px;
+    }
+
+    .cassette-title {
+      font-family: var(--font-hand);
+      font-size: 1.1rem;
+      color: var(--text-main);
+    }
+
+    .reels {
+      display: flex;
+      gap: 40px;
+    }
+
+    .reel {
+      width: 35px;
+      height: 35px;
+      background: #fff;
+      border-radius: 50%;
+      border: 4px solid var(--tape-body);
+      position: relative;
+    }
+
+    .reel::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px; height: 10px;
+      background: var(--tape-body);
+      border-radius: 50%;
+    }
+
+    .spinning .reel {
+      animation: spin 3s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Custom Player Control Area */
+    .player-controls {
+      margin-top: 10px;
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .play-btn {
+      background: var(--accent-sage);
+      color: white;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 15px;
+      font-family: var(--font-code);
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    /* Letter Box */
+    .letter-box {
+      width: 100%;
+      background: #faf7f2;
+      border: 1px solid #e0d8ce;
+      padding: 1.8rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+      text-align: left;
+      font-family: var(--font-body);
+      line-height: 1.8;
+      color: var(--text-main);
+      position: relative;
+    }
+
+    .letter-box::before {
+      content: "✉️";
+      position: absolute;
+      top: -15px;
+      right: 20px;
+      font-size: 1.5rem;
+    }
+
+    /* --------------------------------------------------
+       SECTION 4: POLAROID & GALLERY & BOUQUET
+       -------------------------------------------------- */
+    .camera-container {
+      margin-bottom: 2rem;
+      cursor: pointer;
+    }
+
+    .camera-svg {
+      width: 110px;
+      height: 110px;
+      transition: transform 0.2s;
+    }
+
+    .camera-container:hover .camera-svg {
+      transform: scale(1.05);
+    }
+
+    /* Flash Effect */
+    .flash-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: white;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .flash-active {
+      animation: flashAnim 0.5s ease-out;
+    }
+
+    @keyframes flashAnim {
+      0% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* Polaroid Cards Container */
+    .gallery-container {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      width: 100%;
+      align-items: center;
+      margin-top: 1rem;
+    }
+
+    /* Flip Card Style */
+    .polaroid-card {
+      width: 240px;
+      height: 290px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    .polaroid-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+      background: #fff;
+      padding: 12px 12px 40px 12px;
+      border-radius: 4px;
+    }
+
+    .polaroid-card.flipped .polaroid-inner {
+      transform: rotateY(180deg);
+    }
+
+    .polaroid-front, .polaroid-back {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      padding: 12px 12px 35px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-radius: 4px;
+      background: #fff;
+    }
+
+    .polaroid-img-placeholder {
+      width: 100%;
+      height: 200px;
+      background-color: #eee9e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      border-radius: 2px;
+      object-fit: cover;
+    }
+
+    .polaroid-caption {
+      margin-top: 10px;
+      font-family: var(--font-hand);
+      font-size: 1.1rem;
+      color: var(--text-main);
+    }
+
+    .polaroid-back {
+      transform: rotateY(180deg);
+      justify-content: center;
+      padding: 20px;
+      background: #faf6f0;
+      border: 1px dashed var(--accent-rose);
+    }
+
+    .polaroid-back p {
+      font-family: var(--font-hand);
+      font-size: 1.2rem;
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+
+    /* Flower Bouquet & Ending */
+    .bouquet-area {
+      margin-top: 3rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .bouquet-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .final-quote {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-main);
+      margin: 1.5rem 0;
+    }
+
+    .loop-btn {
+      margin-top: 2rem;
+      font-family: var(--font-code);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      transition: color 0.3s;
+    }
+
+    .loop-btn:hover {
+      color: var(--accent-rose);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="flash-overlay" id="flash"></div>
+
+  <div class="app-container">
+
+    <!-- ==========================================
+         PAGE 1: PASSWORD LOCK
+         ========================================== -->
+    <section id="page1" class="page-section active">
+      <div class="lock-title" id="typewriterText"></div>
+      
+      <div class="pass-input-container" id="passContainer">
+        <div class="digit-box" id="digit-0"></div>
+        <div class="digit-box" id="digit-1"></div>
+        <div class="digit-box" id="digit-2"></div>
+        <div class="digit-box" id="digit-3"></div>
+      </div>
+
+      <div class="error-msg" id="errorMsg"></div>
+      <div class="hint-text">hint : the beginning</div>
+    </section>
+
+    <!-- ==========================================
+         PAGE 2: PARCEL DROP
+         ========================================== -->
+    <section id="page2" class="page-section">
+      <h2 class="box-heading">I’ve got something for you.</h2>
+      
+      <div class="drop-box-container" onclick="goToPage(3)">
+        <!-- Custom Parcel SVG: Brown Box with Pink Label -->
+        <svg class="parcel-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Box Base (Brown) -->
+          <path d="M30 70 L100 35 L170 70 L170 145 L100 180 L30 145 Z" fill="#c49a6c" stroke="#4a3f35" stroke-width="4" stroke-linejoin="round"/>
+          <path d="M100 35 L100 180" stroke="#4a3f35" stroke-width="3" stroke-linecap="round"/>
+          <path d="M30 70 L100 105 L170 70" fill="none" stroke="#4a3f35" stroke-width="4" stroke-linejoin="round"/>
+          <!-- Pink Tape / Label -->
+          <polygon points="85,30 115,30 115,110 85,110" fill="#c89696" opacity="0.9"/>
+          <!-- Little Cute Heart on Label -->
+          <path d="M100 65 C100 60, 93 57, 93 62 C93 66, 100 71, 100 71 C100 71, 107 66, 107 62 C107 57, 100 60, 100 65 Z" fill="#ffffff"/>
+        </svg>
+      </div>
+
+      <p class="tap-hint">tap to open</p>
+    </section>
+
+    <!-- ==========================================
+         PAGE 3: CASSETTE & LETTER
+         ========================================== -->
+    <section id="page3" class="page-section">
+      <div class="scrollable-content">
+        
+        <!-- Cassette Player -->
+        <div class="cassette" id="cassette">
+          <div class="cassette-label">
+            <span class="cassette-title">Our Favorite Songs 🎵</span>
+            <div class="reels">
+              <div class="reel"></div>
+              <div class="reel"></div>
+            </div>
+          </div>
+          <div class="player-controls">
+            <button class="play-btn" onclick="togglePlay()">Play / Pause</button>
+            <span style="font-family: var(--font-code); font-size: 0.7rem; color: #bbb;">Track 01</span>
+          </div>
+        </div>
+
+        <!-- Hidden Audio Element (Customizable) -->
+        <audio id="bgMusic" loop>
+          <!-- คุณสามารถเปลี่ยน URL เพลงตรงนี้ได้ตามต้องการ -->
+          <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        </audio>
+
+        <!-- Custom Letter -->
+        <div class="letter-box">
+          <p style="font-family: var(--font-hand); font-size: 1.4rem; margin-bottom: 0.5rem; color: var(--accent-rose);">ถึงเธอคนพิเศษ...</p>
+          <p>
+            ขอบคุณสำหรับทุกๆ สไมล์และทุกช่วงเวลาที่เราได้สร้างมาด้วยกันตรงนี้นะ 
+            (ส่วนนี้สามารถปรับแต่งข้อความจดหมายของคุณได้ตามใจชอบเลยครับ) 
+            ตั้งแต่วันแรกจนถึงวันนี้ เธอคือของขวัญที่ดีที่สุดเสมอมา.
+          </p>
+        </div>
+
+        <div>
+          <p style="font-family: var(--font-code); font-size: 0.85rem; color: var(--text-muted);">There’s a little more</p>
+          <button class="btn-next" onclick="goToPage(4)">Next ➔</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         PAGE 4: POLAROID CAMERA & GALLERY & BOUQUET
+         ========================================== -->
+    <section id="page4" class="page-section">
+      
+      <!-- Polaroid Camera Trigger -->
+      <div class="camera-container" id="cameraBtn" onclick="snapPhoto()">
+        <svg class="camera-svg" viewBox="0 0 100 100">
+          <rect x="15" y="25" width="70" height="55" rx="8" fill="#7d8c7c"/>
+          <rect x="20" y="30" width="60" height="45" rx="5" fill="#f5f0eb"/>
+          <circle cx="50" cy="52" r="16" fill="#4a3f35"/>
+          <circle cx="50" cy="52" r="12" fill="#333"/>
+          <circle cx="53" cy="49" r="4" fill="#fff" opacity="0.6"/>
+          <circle cx="72" cy="36" r="4" fill="#c89696"/>
+        </svg>
+        <p style="font-family: var(--font-code); font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">[ tap camera to snap ]</p>
+      </div>
+
+      <!-- Main Photo + Gallery (Initially Hidden) -->
+      <div id="galleryArea" style="display: none; width: 100%;">
+        <div class="gallery-container">
+          
+          <!-- Photo 0 (Featured Snap) -->
+          <div class="polaroid-card" onclick="flipCard(this)">
+            <div class="polaroid-inner">
+              <div class="polaroid-front">
+                <!-- เปลี่ยน src รูปของคุณตรงนี้ -->
+                <div class="polaroid-img-placeholder">📸 รูปถ่ายของคุณ</div>
+                <div class="polaroid-caption">First Snap ✨</div>
+              </div>
+              <div class="polaroid-back">
+                <p>ความทรงจำแรกที่ได้ถ่ายด้วยกัน ❤️</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Extra 5 Polaroid Photos -->
+          <!-- Card 1 -->
+          <div class="polaroid-card" onclick="flipCard(this)">
+            <div class="polaroid-inner">
+              <div class="polaroid-front">
+                <div class="polaroid-img-placeholder">รูปที่ 1</div>
+                <div class="polaroid-caption">Memory #1</div>
+              </div>
+              <div class="polaroid-back">
+                <p>ใส่คำอธิบายหลังรูปที่ 1 ตรงนี้</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="polaroid-card" onclick="flipCard(this)">
+            <div class="polaroid-inner">
+              <div class="polaroid-front">
+                <div class="polaroid-img-placeholder">รูปที่ 2</div>
+                <div class="polaroid-caption">Memory #2</div>
+              </div>
+              <div class="polaroid-back">
+                <p>ใส่คำอธิบายหลังรูปที่ 2 ตรงนี้</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="polaroid-card" onclick="flipCard(this)">
+            <div class="polaroid-inner">
+              <div class="polaroid-front">
+                <div class="polaroid-img-placeholder">รูปที่ 3</div>
+                <div class="polaroid-caption">Memory #3</div>
+              </div>
+              <div class="polaroid-back">
+                <p>ใส่คำอธิบายหลังรูปที่ 3 ตรงนี้</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="polaroid-card" onclick="flipCard(this)">
+            <div class="polaroid-inner">
+              <div class="polaroid-front">
+                <div class="polaroid-img-placeholder">รูปที่ 4</div>
+                <div class="polaroid-caption">Memory #4</div>
+              </div>
+              <div class="polaroid-back">
+                <p>ใส่คำอธิบายหลังรูปที่ 4 ตรงนี้</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 5 -->
+          <div class="polaroid-card" onclick="flipCard(this)">
+            <div class="polaroid-inner">
+              <div class="polaroid-front">
+                <div class="polaroid-img-placeholder">รูปที่ 5</div>
+                <div class="polaroid-caption">Memory #5</div>
+              </div>
+              <div class="polaroid-back">
+                <p>ใส่คำอธิบายหลังรูปที่ 5 ตรงนี้</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Flower Bouquet & Ending Text -->
+        <div class="bouquet-area">
+          <div class="bouquet-icon">💐</div>
+          <p class="final-quote">
+            “ ไม่ว่าจะผ่านไปอีกกี่สิบปี<br>เธอจะยังเป็นเรื่องราวที่ดีที่สุดในชีวิตเรานะคะ ”
+          </p>
+          <button class="loop-btn" onclick="goToPage(1)">loop it?</button>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- ==========================================
+       JAVASCRIPT LOGIC
+       ========================================== -->
+  <script>
+    // --- Config & Variables ---
+    const CORRECT_CODE = "0411";
+    let currentInput = "";
+    let isSnapped = false;
+
+    // --- Page Navigation ---
+    function goToPage(pageNum) {
+      document.querySelectorAll('.page-section').forEach(sec => {
+        sec.classList.remove('active');
+      });
+      const target = document.getElementById(`page${pageNum}`);
+      if (target) {
+        target.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      // Reset Passcode if loop back to Page 1
+      if (pageNum === 1) {
+        resetLock();
+      }
+    }
+
+    // --- Page 1: Typewriter & Keypad Logic ---
+    const titleText = "Please enter the correct password";
+    let typeIdx = 0;
+
+    function typeWriter() {
+      if (typeIdx < titleText.length) {
+        document.getElementById("typewriterText").innerHTML += titleText.charAt(typeIdx);
+        typeIdx++;
+        setTimeout(typeWriter, 50);
+      }
+    }
+
+    // Capture Keyboard Input for Pin
+    document.addEventListener('keydown', (e) => {
+      const activePage = document.getElementById('page1').classList.contains('active');
+      if (!activePage) return;
+
+      if (e.key >= '0' && e.key <= '9') {
+        if (currentInput.length < 4) {
+          currentInput += e.key;
+          updateDigitBoxes();
+        }
+      } else if (e.key === 'Backspace') {
+        currentInput = currentInput.slice(0, -1);
+        updateDigitBoxes();
+      }
+
+      if (currentInput.length === 4) {
+        checkPassword();
+      }
+    });
+
+    function updateDigitBoxes() {
+      for (let i = 0; i < 4; i++) {
+        const box = document.getElementById(`digit-${i}`);
+        if (i < currentInput.length) {
+          box.innerText = "•";
+          box.classList.add('active');
+        } else {
+          box.innerText = "";
+          box.classList.remove('active');
+        }
+      }
+    }
+
+    function checkPassword() {
+      const errorEl = document.getElementById('errorMsg');
+      const container = document.getElementById('passContainer');
+
+      if (currentInput === CORRECT_CODE) {
+        errorEl.innerText = "";
+        setTimeout(() => {
+          goToPage(2);
+        }, 300);
+      } else {
+        errorEl.innerText = "try again love !!!";
+        container.classList.add('shake');
+        setTimeout(() => {
+          container.classList.remove('shake');
+          currentInput = "";
+          updateDigitBoxes();
+        }, 500);
+      }
+    }
+
+    function resetLock() {
+      currentInput = "";
+      typeIdx = 0;
+      document.getElementById("typewriterText").innerHTML = "";
+      document.getElementById('errorMsg').innerText = "";
+      updateDigitBoxes();
+      typeWriter();
+    }
+
+    // --- Page 3: Audio Control ---
+    function togglePlay() {
+      const audio = document.getElementById('bgMusic');
+      const cassette = document.getElementById('cassette');
+      if (audio.paused) {
+        audio.play();
+        cassette.classList.add('spinning');
+      } else {
+        audio.pause();
+        cassette.classList.remove('spinning');
+      }
+    }
+
+    // --- Page 4: Camera Snap & Card Flip ---
+    function snapPhoto() {
+      if (isSnapped) return; // กดถ่ายได้ 1 ครั้ง
+      isSnapped = true;
+
+      // Flash Effect
+      const flash = document.getElementById('flash');
+      flash.classList.add('flash-active');
+      setTimeout(() => flash.classList.remove('flash-active'), 500);
+
+      // Hide Camera hint & Show Gallery
+      document.getElementById('cameraBtn').style.display = 'none';
+      document.getElementById('galleryArea').style.display = 'block';
+    }
+
+    function flipCard(card) {
+      card.classList.toggle('flipped');
+    }
+
+    // Initialize Page 1
+    window.onload = () => {
+      typeWriter();
+    };
+  </script>
+</body>
+</html>
